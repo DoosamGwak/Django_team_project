@@ -69,7 +69,6 @@ def update_password(request):
 
 @require_POST
 def delete(request):
-    print(request.user)
     if request.user.is_authenticated:
         request.user.delete()
         auth_logout(request)
