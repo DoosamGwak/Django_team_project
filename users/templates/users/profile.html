@@ -1,5 +1,13 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ member.username }}의 프로필</h1>
-{% endblock content %}
+  <h1>{{ member.username }}의 프로필</h1>
+  <form action="{% url 'users:follow' member.pk %}" method="POST">
+    {% csrf_token %}
+    {% if request.user in member.followers.all %}
+      <input type="submit" value="Unfollow" />
+    {% else %}
+      <input type="submit" value="Follow" />
+    {% endif %}
+  </form>
+{% endblock %}

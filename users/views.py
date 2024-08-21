@@ -19,5 +19,10 @@ def profile(request, username):
 def follow(request, user_id):
     if request.user.is_authenticated:
         member = get_object_or_404(get_user_model(), id=user_id)
-        
+        if request.user != member:
+            if member.followers.filter(pk=request.user.pk):
+                member.followers.remove(request.user)
+            else:
+                member.followers.add(request.user)
+        return redirect("users:profile", username=member.username)
     return redirect("account:login")
