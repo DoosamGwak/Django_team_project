@@ -11,6 +11,7 @@ def profile(request, username):
     member = get_object_or_404(get_user_model(), username=username)
     context = {
         "member": member,
+        "date_joined": member.date_joined,
         }
     return render(request, "users/profile.html", context)
 
@@ -20,7 +21,7 @@ def follow(request, user_id):
     if request.user.is_authenticated:
         member = get_object_or_404(get_user_model(), id=user_id)
         if request.user != member:
-            if member.followers.filter(pk=request.user.pk):
+            if member.followers.filter(pk=request.user.pk).exists():
                 member.followers.remove(request.user)
             else:
                 member.followers.add(request.user)
