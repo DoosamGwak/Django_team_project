@@ -3,11 +3,31 @@
 
 {% block content %}
   <h1>{{ member.username }}의 프로필</h1>
-  <img src="{% static 'users/user_profile.png' %}" alt="default_profile_image">
-  <p>사용자: {{member.username}}</p>
+  {% if profile_image and profile_image.image %}
+    <img id="profile-img" src="{{ profile_image.image.url }}" alt="profile_image" style="cursor: pointer;" />
+  {% else %}
+    <img id="profile-img" src="{% static 'users/user_profile.png' %}" alt="default_profile_image" style="cursor: pointer;" />
+  {% endif %}
+
+  <br />
+
+  {% if request.user == member %}
+    <!-- 파일 입력 필드를 숨김 -->
+    <form id="profile-form" action="{% url 'users:profile' member.username %}" method="POST" enctype="multipart/form-data" style="display: none;">
+      {% csrf_token %}
+      <input type="file" id="id_image" name="image" accept="image/*" style="display: none;" />
+      <input type="submit" value="이미지 변경" />
+    </form>
+  {% endif %}
+
+  <br />
+  <br />
+
+  <p>사용자: {{ member.username }}</p>
   <p>가입일: {{ date_joined|date:'SHORT_DATE_FORMAT' }}</p>
   <p>팔로워: {{ member.followers.count }}</p>
-  <p>팔로잉: {{ member.followings.count}}</p>
+  <p>팔로잉: {{ member.followings.count }}</p>
+
   {% if request.user != member %}
     <form action="{% url 'users:follow' member.pk %}" method="POST">
       {% csrf_token %}
@@ -19,12 +39,15 @@
     </form>
   {% endif %}
 
-  {% if request.user == member %}
-    <form action="" method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <input type="submit" value="이미지 변경">
-    </form>
-  
-  {% endif %}
+  <script>
+    document.getElementById('profile-img').onclick = function () {
+      // 파일 선택 창을 엽니다.
+      document.getElementById('id_image').click()
+    }
+    
+    document.getElementById('id_image').onchange = function () {
+      // 파일이 선택되면 자동으로 폼을 제출합니다.
+      document.getElementById('profile-form').submit()
+    }
+  </script>
 {% endblock %}

@@ -2,28 +2,34 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
 from .forms import ProfileImageForm
+from .models import Profile
 
 
 # Create your views here.
 def users(request):
     return render(request, "users/users.html")
 
+
 def profile(request, username):
     member = get_object_or_404(get_user_model(), username=username)
-    
+    profile_image = Profile.objects.filter(user=member).last()
+
     if request.method == "POST":
-        form = ProfileImageForm(request.POST, request.FILES, instance=member.profile)
+        form = ProfileImageForm(request.POST, request.FILES, instance=profile_image)
         if form.is_valid():
-            form.save()
+            profile_image = form.save(commit=False)
+            profile_image.user = member
+            profile_image.save()
             return redirect("users:profile", username=member.username)
     else:
-        form = ProfileImageForm(instance=member.profile)
+        form = ProfileImageForm(instance=profile_image)
 
     context = {
         "member": member,
-        "form": form,
         "date_joined": member.date_joined,
-        }
+        "form": form,
+        "profile_image": profile_image,
+    }
     return render(request, "users/profile.html", context)
 
 
