@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
@@ -56,3 +57,5 @@ def follow(request, user_id):
                 member.followers.add(request.user)
         return redirect("users:profile", username=member.username)
     return redirect("account:login")
+
+
