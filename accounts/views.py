@@ -13,7 +13,8 @@ def login(request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             auth_login(request, form.get_user())
-        return redirect('products:products')
+            next_path = request.GET.get("next") or 'products:products'
+        return redirect(next_path)
     else: #url 내가 직접 치고온거 or <a href=''></a>
         form = AuthenticationForm()
     context = { "form": form }  
