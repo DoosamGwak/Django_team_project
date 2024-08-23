@@ -1,14 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProductForm
 from .models import Product
+from django.db.models import Count
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
 
 
 
 def products(request):
-    products = Product.objects.all().order_by('-pk')
-    context = {'products': products}
+    sort = request.GET.get('sort','')
+    if sort == 'like':
+        products = Product.objects.annotate(like_count = Count('user_like')).order_by('-like_count','-pk')
+    else:
+        products = Product.objects.order_by('-pk')
+    context = {
+        'products': products,
+        'sort': sort
+    }
     return render(request, 'products/products.html', context)
 
 

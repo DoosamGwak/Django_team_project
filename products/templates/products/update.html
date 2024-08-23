@@ -5,7 +5,7 @@
 
 <form action="{% url 'products:update' product.pk%}" method='POST'>
     {% csrf_token %}
-    {{form.as_p}}
+    {{ form.as_p}}
     <input type="submit" value='수정'>
 </form>
 

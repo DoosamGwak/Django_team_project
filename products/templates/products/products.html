@@ -97,10 +97,18 @@
   </style>
 
 
-
+<form action="{% url "products:products" %}" mothod='get'>
+    <div class='col-4'>
+        <select name="sort" id="sort" onchange="this.form.submit()">
+            <option value="recent" id="recent" {% if not request.GET.sort %}selected{% endif %}>최신순</option>
+            <option value="like" id="like" {% if request.GET.sort == 'like' %}selected{% endif %}>좋아요순</option>
+        </select>
+    </div>
+</form>
+    
 <div class="album py-5 bg-body-tertiary">
     {% for product in products %}
-
+    
     <div class="container">
 
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
@@ -132,7 +140,7 @@
                   {% endif %}
                   <button type="button" class="btn btn-sm btn-outline-secondary">{{product.user_like.count}}</button>
                 </div>
-                <small class="text-body-secondary">{{ product.created_at }}</small>
+                <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
               </div>
             </div>
           </div>
