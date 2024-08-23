@@ -9,7 +9,10 @@
     <img id="profile-img" src="{% static 'users/user_profile.png' %}" alt="default_profile_image" style="cursor: pointer;" />
   {% endif %}
 
-  <br />
+  <div id="profile-options" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 5px;">
+    <p id="change-image" style="cursor: pointer;">프로필 이미지 변경</p>
+    <p id="reset-image" style="cursor: pointer;">프로필 이미지 삭제</p>
+  </div>
 
   {% if request.user == member %}
     <!-- 파일 입력 필드를 숨김 -->
@@ -40,14 +43,57 @@
   {% endif %}
 
   <script>
-    document.getElementById('profile-img').onclick = function () {
-      // 파일 선택 창을 엽니다.
-      document.getElementById('id_image').click()
+    const profileImg = document.getElementById('profile-img');
+const profileOptions = document.getElementById('profile-options');
+const changeImage = document.getElementById('change-image');
+const resetImage = document.getElementById('reset-image');
+const profileForm = document.getElementById('profile-form');
+const imageInput = document.getElementById('id_image');
+
+profileImg.onclick = function (event) {
+    // 옵션 메뉴를 프로필 이미지 근처에 표시
+    profileOptions.style.display = 'block';
+    profileOptions.style.left = event.pageX + 'px';
+    profileOptions.style.top = event.pageY + 'px';
+};
+
+changeImage.onclick = function () {
+    // 파일 선택 창을 엽니다.
+    imageInput.click();
+};
+
+resetImage.onclick = function () {
+    if (confirm('프로필 이미지를 기본 이미지로 변경하시겠습니까?')) {
+        // Ajax 요청으로 프로필 이미지를 기본 이미지로 리셋합니다.
+        fetch("{% url 'users:reset_profile_image' member.username %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            }
+        })
+        .then(() => {
+            // 성공적으로 리셋된 후 페이지를 새로고침합니다.
+            window.location.reload();  // 페이지를 새로고침하여 변경사항을 반영
+        })
+        .catch(() => {
+            alert('이미지를 기본 이미지로 변경할 수 없습니다.');
+        });
     }
-    
-    document.getElementById('id_image').onchange = function () {
-      // 파일이 선택되면 자동으로 폼을 제출합니다.
-      document.getElementById('profile-form').submit()
+    // 옵션 메뉴를 숨김
+    profileOptions.style.display = 'none';
+};
+
+// 이미지 선택 시 폼을 자동으로 제출합니다.
+imageInput.onchange = function () {
+    profileForm.submit();
+};
+
+// 옵션 메뉴 외부를 클릭했을 때 메뉴를 숨깁니다.
+document.addEventListener('click', function (event) {
+    if (!profileOptions.contains(event.target) && event.target !== profileImg) {
+        profileOptions.style.display = 'none';
     }
+});
+
   </script>
 {% endblock %}

@@ -33,6 +33,18 @@ def profile(request, username):
     return render(request, "users/profile.html", context)
 
 
+def reset_profile_image(request, username):
+    member = get_object_or_404(get_user_model(), username=username)
+    profile_image = Profile.objects.filter(user=member).last()
+
+    if request.user == member and profile_image:
+        profile_image.image.delete()
+        profile_image.image = None
+        profile_image.save()
+    return redirect('users:profile', username=member.username)
+
+
+
 @require_POST
 def follow(request, user_id):
     if request.user.is_authenticated:
