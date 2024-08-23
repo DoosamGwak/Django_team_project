@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<img src="{{ product.image }}" alt="{{product.title}}" class='product'>
+<h3>{{product.title}}</h3>
+<p>{{product.content}}</p>
+
+{% if product.created_at == product.updated_at %}
+<p>{{product.created_at}}</p>
+{% else %}
+<p>{{product.updated_at}} (수정됨)</p><br>
+{% endif %}
+
+{% if request.user == product.author %}
+<a href="{% url "products:update" product.pk %}"><button>수정하기</button></a>
+<form action="{% url "products:delete" product.pk %}" method='POST'>
+    {% csrf_token %}
+    <input type="submit" value="삭제하기">
+</form>
+{% endif %}
+
+
+
+{% endblock content %}
