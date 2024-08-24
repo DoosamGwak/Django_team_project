@@ -27,6 +27,7 @@ class Product(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="author")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    clicked = models.PositiveIntegerField(default=0)
 
 
 class Comment(models.Model):

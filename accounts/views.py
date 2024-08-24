@@ -7,6 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm,  PasswordChangeForm
 from django.views.decorators.http import require_http_methods, require_POST
 
 
+
 @require_http_methods(["GET", "POST"])
 def login(request):
     if request.user.is_authenticated:  # 비로그인 상태에서만 url로 접근 가능

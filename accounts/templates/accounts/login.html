@@ -1,10 +1,15 @@
 {% extends "base.html" %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 
 {% block content %}
+<div class='container-sm'>
 <h3>Login</h3>
 <form action="" method="POST">
     {% csrf_token %}
-    {{form.as_p}}
+    {% bootstrap_form form %}
     <input type="submit" value="로그인">
 </form>
+</div>
 {% endblock content %}

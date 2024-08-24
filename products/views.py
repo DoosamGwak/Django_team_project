@@ -11,6 +11,8 @@ def products(request):
     sort = request.GET.get('sort','')
     if sort == 'like':
         products = Product.objects.annotate(like_count = Count('user_like')).order_by('-like_count','-pk')
+    elif sort == 'clicked':
+        products = Product.objects.order_by('-clicked','-pk')
     else:
         products = Product.objects.order_by('-pk')
     context = {
@@ -38,6 +40,8 @@ def create(request):
 
 def detail(request, pk):
     product = get_object_or_404(Product,pk=pk)
+    product.clicked += 1
+    product.save()
     context = {'product': product}
     return render(request,'products/detail.html', context)
 
