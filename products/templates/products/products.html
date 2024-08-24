@@ -2,21 +2,6 @@
 
 
 {% block content %}
-<a href="{% url "products:create" %}"><button>물건 올리기</button></a>
-
-
-<style>
-    .product {
-        width: 100%;
-        object-fit;
-    }
-    
-    .image-box {
-        width: 360px;
-        height: 240px;
-        overflow: hidden;
-    }
-</style>
 <style>
     .bd-placeholder-img {
       font-size: 1.125rem;
@@ -94,31 +79,33 @@
     .bd-mode-toggle .dropdown-menu .active .bi {
       display: block !important;
     }
+
   </style>
 
 
-<form action="{% url "products:products" %}" mothod='get'>
-    <div class='col-4'>
-        <select name="sort" id="sort" onchange="this.form.submit()">
-            <option value="recent" id="recent" {% if not request.GET.sort %}selected{% endif %}>최신순</option>
-            <option value="like" id="like" {% if request.GET.sort == 'like' %}selected{% endif %}>좋아요순</option>
-            <option value="clicked" id="clicked" {% if request.GET.sort == 'clicked' %}selected{% endif %}>조회수순</option>
-        </select>
-    </div>
-</form>
-    
-<div class="album py-5 bg-body-tertiary">
-    {% for product in products %}
-    
-    <div class="container">
 
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+  
+<div class="album py-5 bg-body-tertiary">
+  <div class="container-xxl ">
+    <div>
+        <form action="{% url "products:products" %}" mothod='get'>
+            <div class='col-4'>
+                <select name="sort" id="sort" onchange="this.form.submit()">
+                    <option value="recent" id="recent" {% if not request.GET.sort %}selected{% endif %}>최신순</option>
+                    <option value="like" id="like" {% if request.GET.sort == 'like' %}selected{% endif %}>좋아요순</option>
+                    <option value="clicked" id="clicked" {% if request.GET.sort == 'clicked' %}selected{% endif %}>조회수순</option>
+                </select>
+            </div>
+        </form>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
+        {% for product in products %}
         <div class="col">
           <div class="card shadow-sm">
             <a href="{% url "products:detail" product.pk %}">
             {% if product.image %}
-            <div width="100%" height="225" style="">
-                <img src="{{ product.image.url }}" alt="{{product.title}}" width="100%"  class='product'>
+            <div width="100%" height="225px" style="overflow: hidden;">
+                <img src="{{ product.image.url }}" alt="{{product.title}}" width="100%" sytle='object-fit: cover;'>
             </div>
             {% else %}
             <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
@@ -146,10 +133,10 @@
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
-    </div>
-    {% endfor %}
   </div>
+</div>
   <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script src="chrome-extension://okkffdhbfplmbjblhgapnchjinanmnij/content/sm.js" data-pname="recorder-screenshot-v3" data-asset-path="chrome-extension://okkffdhbfplmbjblhgapnchjinanmnij/"></script>
 {% endblock content %}

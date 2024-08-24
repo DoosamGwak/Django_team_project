@@ -7,6 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm,  PasswordChangeForm
 from django.views.decorators.http import require_http_methods, require_POST
 
 
+
 @require_http_methods(["GET", "POST"])
 def login(request):
     if request.method == "POST": #내가 데이터를 치고 들어온것
