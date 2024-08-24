@@ -10,6 +10,8 @@ from django.views.decorators.http import require_http_methods, require_POST
 
 @require_http_methods(["GET", "POST"])
 def login(request):
+    if request.user.is_authenticated:  # 비로그인 상태에서만 url로 접근 가능
+        return redirect("products:products")
     if request.method == "POST": #내가 데이터를 치고 들어온것
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
