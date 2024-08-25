@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block content %}
+<div class='container-xxl'>
   <h1>{{ member.username }}의 프로필</h1>
   {% if profile_image and profile_image.image %}
     <img id="profile-img" src="{{ profile_image.image.url }}" alt="profile_image" style="cursor: pointer;" />
@@ -43,6 +44,177 @@
     </form>
   {% endif %}
 
+  
+    <a href="{% url "accounts:update" %}"><button>회원정보수정</button></a>
+    <form action="{% url "accounts:delete" %}" method="POST">
+      {% csrf_token %}
+      <input type="submit" value='회원탈퇴'>
+    </form>
+
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">상품</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">찜</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">팔로잉</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">팔로워</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+        <div class="album py-5 bg-body-tertiary">
+          <div class="container-xxl ">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for product in member.product.all %}
+                <div class="col">
+                  <div class="card shadow-sm">
+                    <a href="{% url "products:detail" product.pk %}">
+                    {% if product.image %}
+                    <div width="100%" height="225px" style="overflow: hidden;">
+                        <img src="{{ product.image.url }}" alt="{{product.title}}" width="100%" sytle='object-fit: cover;'>
+                    </div>
+                    {% else %}
+                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                    {% endif %}
+                    </a>
+                    <div class="card-body">
+                      <p class="card-text">{{product.title}} 작성자: {{product.author.username}}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                          {% if user in product.user_like.all %}
+                            <form action="{% url "products:like" product.pk %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{product.user_like.count}}</i></button>
+                            </form>
+                          {% else  %}
+                            <form action="{% url "products:like" product.pk %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{product.user_like.count}}</i></button>
+                            </form>
+                          {% endif %}
+                          <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> {{product.clicked}}</button>
+                        </div>
+                        <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+        <div class="album py-5 bg-body-tertiary">
+          <div class="container-xxl ">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for product in member.product_like.all %}
+                <div class="col">
+                  <div class="card shadow-sm">
+                    <a href="{% url "products:detail" product.pk %}">
+                    {% if product.image %}
+                    <div width="100%" height="225px" style="overflow: hidden;">
+                        <img src="{{ product.image.url }}" alt="{{product.title}}" width="100%" sytle='object-fit: cover;'>
+                    </div>
+                    {% else %}
+                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                    {% endif %}
+                    </a>
+                    <div class="card-body">
+                      <p class="card-text">{{product.title}} 작성자: {{product.author.username}}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                          {% if user in product.user_like.all %}
+                            <form action="{% url "products:like" product.pk %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{product.user_like.count}}</i></button>
+                            </form>
+                          {% else  %}
+                            <form action="{% url "products:like" product.pk %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{product.user_like.count}}</i></button>
+                            </form>
+                          {% endif %}
+                          <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> {{product.clicked}}</button>
+                        </div>
+                        <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+        <div class="album py-5 bg-body-tertiary">
+          <div class="container-xxl ">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for following in member.followings.all %}
+                  {% for product in following.product.all %}
+                    <div class="col">
+                      <div class="card shadow-sm">
+                        <a href="{% url "products:detail" product.pk %}">
+                        {% if product.image %}
+                        <div width="100%" height="225px" style="overflow: hidden;">
+                            <img src="{{ product.image.url }}" alt="{{product.title}}" width="100%" sytle='object-fit: cover;'>
+                        </div>
+                        {% else %}
+                        <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                        {% endif %}
+                        </a>
+                        <div class="card-body">
+                          <p class="card-text">{{product.title}} 작성자: {{product.author.username}}</p>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                              {% if user in product.user_like.all %}
+                                <form action="{% url "products:like" product.pk %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{product.user_like.count}}</i></button>
+                                </form>
+                              {% else  %}
+                                <form action="{% url "products:like" product.pk %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{product.user_like.count}}</i></button>
+                                </form>
+                              {% endif %}
+                              <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> {{product.clicked}}</button>
+                            </div>
+                            <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% endfor %}
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">
+        <div class='container px-4 text-center'>
+          <div class='row'>
+            {% for follower in member.followers.all %}
+            <div class="col-lg-4">
+              <h2 class="fw-normal">{{follower.username}}</h2>
+              <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-color)"></rect></svg>
+              <p></p>
+              <p><a class="btn btn-secondary" href="#">View details »</a></p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
   <script>
     const profileImg = document.getElementById('profile-img')
     const profileOptions = document.getElementById('profile-options')

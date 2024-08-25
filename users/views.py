@@ -7,9 +7,6 @@ from .models import Profile
 
 
 # Create your views here.
-def users(request):
-    return render(request, "users/users.html")
-
 
 def profile(request, username):
     member = get_object_or_404(get_user_model(), username=username)

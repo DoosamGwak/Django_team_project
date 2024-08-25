@@ -24,14 +24,14 @@ class Product(models.Model):
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='images/',blank=True)
     content = models.TextField()
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="author")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="product")#r_n수정필요
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     clicked = models.PositiveIntegerField(default=0)
 
 
 class Comment(models.Model):
-    comment_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user")
-    comment_product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comment_product")
+    comment_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user")#r_n수정필요
+    comment_product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comment_product")#r_n수정필요
     content = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)

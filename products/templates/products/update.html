@@ -1,12 +1,14 @@
 {% extends "base.html" %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 
 {% block content %}
-<h3>update</h3>
-
+<div style="text-align : center; max-width: 500px; margin: 4rem auto;">
 <form action="{% url 'products:update' product.pk%}" method='POST'>
     {% csrf_token %}
-    {{ form.as_p}}
+    {% bootstrap_form form %}
     <input type="submit" value='수정'>
 </form>
-
+</div>
 {% endblock content %}
