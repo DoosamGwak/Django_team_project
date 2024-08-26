@@ -15,9 +15,17 @@ body, h1, h2, h3, h4, h5, h6, p, a, button, nav, footer {
     padding: 10px 20px; 
 }
 
-
 .navbar-nav {
     margin-left: auto; 
     display: flex; 
     align-items: center; 
+}
+
+.btn .btn-outline-warning {
+    width: 130px;
+    height: 60px;
+}
+
+.logo { 
+    width: 250px;
 }

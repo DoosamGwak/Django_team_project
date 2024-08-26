@@ -5,9 +5,22 @@
 <h1>{{product.title}}</h1><br>
 <img src="{{ product.image.url }}" alt="{{product.title}}" class='product'><br>
 <p class='fs-3'>{{product.convert_hashtags_to_links|safe}}</p>
+<p class='fs-5'>{{product.created_string}}</p><br>
 
 
-<p>{{product.created_string}}</p><br>
+
+{% if user in product.user_like.all %}
+    <form action="{% url "products:like" product.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{product.user_like.count}}</i></button>
+    </form>
+{% else %}
+    <form action="{% url "products:like" product.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{product.user_like.count}}</i></button>
+    </form>
+{% endif %}
+
 
 
 {% if request.user == product.author %}
