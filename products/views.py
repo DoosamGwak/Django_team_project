@@ -4,20 +4,35 @@ from .models import Product, HashTag
 from django.db.models import Count
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
+from django.db.models.query_utils import Q
 import re
 
 
 def products(request):
+    query = request.GET.get('q','')
     sort = request.GET.get('sort','')
+
+    products = Product.objects.all()
+
+    if query:
+        products = products.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(author__username__icontains=query) |
+            Q(hashtag__hashtag_name__icontains=query)
+        ).distinct()
+
     if sort == 'like':
-        products = Product.objects.annotate(like_count = Count('user_like')).order_by('-like_count','-pk')
+        products = products.annotate(like_count = Count('user_like')).order_by('-like_count','-pk')
     elif sort == 'clicked':
-        products = Product.objects.order_by('-clicked','-pk')
+        products = products.order_by('-clicked','-pk')
     else:
-        products = Product.objects.order_by('-pk')
+        products = products.order_by('-pk')
+        
     context = {
         'products': products,
-        'sort': sort
+        'sort': sort,
+        'query': query
     }
     return render(request, 'products/products.html', context)
 
@@ -100,11 +115,8 @@ def like(request, pk):
 
 
 def hashtag_detail(request, hashtag_name):
-    print('111111111111111111111111')
     hashtag = get_object_or_404(HashTag, hashtag_name=hashtag_name)
-    print('222222222222222222222222222')
     products = Product.objects.filter(hashtag=hashtag)
-    print('3333333333333333333333333333333333333333')
     context = {
         'hashtag': hashtag,
         'products': products,
