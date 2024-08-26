@@ -1,13 +1,71 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load bootstrap5 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
 {% block content %}
-<h3>회원가입</h3>
-<form action="{% url "accounts:signup" %}" method="POST">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    <button type="submit" class="btn btn-outline-warning">회원가입</button>
-</form>
-{% endblock content %}
+  <style>
+    /* 페이지의 전체 높이를 채우기 위해 부모 컨테이너의 높이를 지정 */
+    .signup-page-container {
+      display: flex;
+      justify-content: center; /* 수평 중앙 정렬 */
+      align-items: center; /* 수직 중앙 정렬 */
+      min-height: 100vh; /* 뷰포트의 전체 높이만큼 설정 */
+      padding-top: 50px; /* 네브바와의 간격 조정 */
+    }
+    
+    .signup-form-container {
+      max-width: 1000px; /* 폼의 최대 너비를 1000px로 설정 */
+      padding: 80px; /* 폼 내부의 여백을 넉넉하게 설정 */
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f8f9fa;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* 폼에 그림자 추가 */
+    }
+    
+    .signup-form-container h3 {
+      font-size: 2.5rem; /* 제목의 폰트 크기를 2.5rem로 설정 */
+      margin-bottom: 30px; /* 제목과 폼 사이에 여백 추가 */
+    }
+    
+    .signup-form-container label {
+      font-size: 1.25rem; /* 레이블의 폰트 크기를 1.25rem로 설정 */
+    }
+    
+    .signup-form-container input,
+    .signup-form-container select,
+    .signup-form-container textarea {
+      font-size: 1.25rem; /* 입력 필드의 폰트 크기를 1.25rem로 설정 */
+      padding: 10px;
+    }
+    
+    /* Password Confirmation 필드와 버튼 사이의 간격 조정 */
+    .signup-form-container .form-group:last-of-type {
+      margin-bottom: 30px; /* 마지막 필드와 버튼 사이의 여백을 30px로 설정 */
+    }
+    
+    .signup-form-container button {
+      font-size: 1.5rem; /* 버튼의 폰트 크기를 1.5rem로 설정 */
+      padding: 15px 30px; /* 버튼의 패딩도 넉넉하게 설정 */
+      margin-top: 30px; /* 버튼 상단에 추가 여백 설정 */
+    }
+    
+    .signup-form-container a button {
+      width: 100%; /* 회원가입 버튼의 너비를 폼 너비에 맞춤 */
+      margin-top: 15px; /* 버튼 사이에 간격을 둠 */
+      font-size: 1.5rem; /* 회원가입 버튼의 폰트 크기를 1.5rem로 설정 */
+      padding: 15px 30px; /* 회원가입 버튼의 패딩도 넉넉하게 설정 */
+    }
+  </style>
+
+  <div class="signup-page-container">
+    <div class="signup-form-container">
+      <h3>회원가입</h3>
+      <form action="{% url 'accounts:signup' %}" method="POST">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-outline-warning">회원가입</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}
