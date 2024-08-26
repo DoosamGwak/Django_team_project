@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Posts with #{{ hashtag.name }}</h2>
+    <ul>
+        {% for product in products %}
+            <li><a href="{% url 'products:detail' product.pk %}">{{ product.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

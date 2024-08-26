@@ -54,5 +54,3 @@ def follow(request, user_id):
                 member.followers.add(request.user)
         return redirect("users:profile", username=member.username)
     return redirect("account:login")
-
-

@@ -18,7 +18,8 @@ from datetime import datetime, timedelta
 #             return str(time.days) + '일 전'
 #         else:
 #             return False
-
+class HashTag(models.Model):
+    hashtag_name = models.CharField(max_length=10, unique=True)
 
 class Product(models.Model):
     title = models.CharField(max_length=100)
@@ -28,7 +29,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     clicked = models.PositiveIntegerField(default=0)
-
+    hashtag = models.ManyToManyField(HashTag, related_name='hashtag_product', blank=True)
 
 class Comment(models.Model):
     comment_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user")#r_n수정필요

@@ -4,7 +4,7 @@
 
 <img src="{{ product.image.url }}" alt="{{product.title}}" class='product'>
 <h3>{{product.title}}</h3>
-<p>{{product.content}}</p>
+<p>{{product.content|safe}}</p>
 
 {% if product.created_at == product.updated_at %}
 <p>{{product.created_at}}</p>

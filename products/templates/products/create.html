@@ -8,7 +8,7 @@
     <h3>create</h3>
     <form action="{% url "products:create" %}" method="POST" enctype='multipart/form-data'>
         {% csrf_token %}  
-        {% bootstrap_form form %}
+        {{ form.as_p }}
         <input type="submit" value="물품등록">
     </form>
 </div>

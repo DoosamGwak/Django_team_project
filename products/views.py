@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProductForm
-from .models import Product
+from .models import Product, HashTag
 from django.db.models import Count
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
-
+import re
 
 
 def products(request):
@@ -22,6 +22,11 @@ def products(request):
     return render(request, 'products/products.html', context)
 
 
+def convert_hashtags_to_links(content):
+    # 해시태그를 추출하고 링크로 변환
+    return re.sub(r'#(\w+)', r'<a href="/products/hashtag/\1/">#\1</a>', content)
+
+
 @login_required
 @require_http_methods(["GET","POST"])
 def create(request):
@@ -30,7 +35,14 @@ def create(request):
         if form.is_valid():
             product = form.save(commit=False)
             product.author = request.user
+            
+            hashtags = re.findall(r'#(\w+)', product.content)
+            product.content = convert_hashtags_to_links(product.content)  # 해시태그를 링크로 변환
             product.save()
+            for tag in hashtags:
+                hashtag, _ = HashTag.objects.get_or_create(hashtag_name=tag)
+                product.hashtag.add(hashtag)
+
             return redirect("products:products")
     else:
         form = ProductForm
@@ -85,3 +97,16 @@ def like(request, pk):
     else:
         redirect('accounts:login')
     return redirect('products:products')
+
+
+def hashtag_detail(request, hashtag_name):
+    print('111111111111111111111111')
+    hashtag = get_object_or_404(HashTag, hashtag_name=hashtag_name)
+    print('222222222222222222222222222')
+    products = Product.objects.filter(hashtag=hashtag)
+    print('3333333333333333333333333333333333333333')
+    context = {
+        'hashtag': hashtag,
+        'products': products,
+        }
+    return render(request, 'products/hashtag.html', context)
