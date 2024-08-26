@@ -8,6 +8,6 @@
 <form action="{% url "accounts:signup" %}" method="POST">
     {% csrf_token %}
     {% bootstrap_form form %}
-    <input type="submit" value='회원가입'>
+    <button type="submit" class="btn btn-outline-warning">회원가입</button>
 </form>
 {% endblock content %}

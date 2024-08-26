@@ -37,9 +37,6 @@ def products(request):
     return render(request, 'products/products.html', context)
 
 
-def convert_hashtags_to_links(content):
-    # 해시태그를 추출하고 링크로 변환
-    return re.sub(r'#(\w+)', r'<a href="/products/hashtag/\1/">#\1</a>', content)
 
 
 @login_required
@@ -50,13 +47,12 @@ def create(request):
         if form.is_valid():
             product = form.save(commit=False)
             product.author = request.user
-            
-            hashtags = re.findall(r'#(\w+)', product.content)
-            product.content = convert_hashtags_to_links(product.content)  # 해시태그를 링크로 변환
             product.save()
-            for tag in hashtags:
-                hashtag, _ = HashTag.objects.get_or_create(hashtag_name=tag)
-                product.hashtag.add(hashtag)
+            # hashtags = re.findall(r'#(\w+)', product.content)
+            # for tag in hashtags:
+            #     hashtag, _ = HashTag.objects.get_or_create(hashtag_name=tag)
+            #     product.hashtag.add(hashtag)
+            product.save_hash()
 
             return redirect("products:products")
     else:
@@ -82,6 +78,8 @@ def update(request,pk):
     if request.method == 'POST':
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
+            form.save(commit=False)
+            product.save_hash()
             form.save()
         return redirect('products:detail', pk)
     else:
