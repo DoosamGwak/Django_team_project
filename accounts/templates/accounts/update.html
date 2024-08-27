@@ -1,9 +1,97 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 
 {% block content %}
-<form action="{% url "accounts:update" %}" method='POST'>
-    {% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" value="수정">
-</form>
-{% endblock content %}
+  <div class="form-container">
+    <h2 class="form-title">회원 정보 수정</h2>
+    <form action="{% url 'accounts:update' %}" method="POST">
+      {% csrf_token %}
+      {% bootstrap_form form exclude='password' layout='horizontal' %}
+
+      <!-- 수정 및 비밀번호 변경 버튼 배치 -->
+      <div class="form-group btn-group">
+        <a href="{% url 'accounts:update_password' %}" class="btn btn-secondary flex-grow-1 btn-block">비밀번호 변경</a>
+        <button type="submit" class="btn btn-success flex-grow-1 btn-block">수정</button>
+      </div>
+    </form>
+
+    <!-- 회원 탈퇴 버튼 별도 배치 -->
+    <form action="{% url 'accounts:delete' %}" method="POST" class="form-group mt-3" onsubmit="return confirmDelete()">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger btn-block w-100">회원 탈퇴</button>
+    </form>
+  </div>
+
+  <style>
+    .form-container {
+      margin: 60px auto;
+      max-width: 600px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-title {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group .form-control {
+      height: 40px;
+      font-size: 16px;
+    }
+    
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn-block {
+      width: 100%;
+      padding: 10px;
+    }
+
+    .btn-danger {
+      background-color: transparent;
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+    
+    .btn-secondary {
+      background-color: transparent;
+      border-color: #6c757d;
+      color: #6c757d;
+    }
+    
+    .btn-success {
+      background-color: transparent;
+      border-color: #28a745;
+      color: #28a745;
+    }
+    
+    .btn:hover {
+      opacity: 0.8;
+    }
+    
+    .w-100 {
+      width: 100%;
+    }
+  </style>
+
+  <script>
+    function confirmDelete() {
+      return confirm('정말로 회원 탈퇴를 하시겠습니까? 이 작업은 되돌릴 수 없습니다.')
+    }
+  </script>
+{% endblock %}
