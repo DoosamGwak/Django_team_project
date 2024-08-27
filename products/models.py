@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 import re
 
@@ -32,7 +32,7 @@ class Product(models.Model):
             return False
     
     def convert_hashtags_to_links(self):
-        return re.sub(r'#(\w+)', r'<a class="text-primary" href="/products/hashtag/\1/">#\1</a>', self.content)
+        return re.sub(r'#(\w+)', r'<a class="hashtag" href="/products/hashtag/\1/">#\1</a>', self.content)
 
     def save_hash(self):
         hashtags = re.findall(r'#(\w+)', self.content)

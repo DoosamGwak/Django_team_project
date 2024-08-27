@@ -1,15 +1,18 @@
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST,require_http_methods
 from .forms import ProfileImageForm
 from .models import Profile
 from django.utils import timezone   # 상점 오픈일 계산 관련 
+from django.contrib.auth.decorators import login_required
 
-
-# Create your views here.
-
+# Create your views here.'
+@login_required
+@require_http_methods(["GET","POST"])
 def profile(request, username):
+    if username=='AnonymousUser':
+        username=request.user.username
     member = get_object_or_404(get_user_model(), username=username)
     profile_image = Profile.objects.filter(user=member).last()
 
