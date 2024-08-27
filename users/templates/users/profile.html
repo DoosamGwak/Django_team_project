@@ -1,271 +1,295 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
 <div class='container-xxl'>
-  <h1>{{ member.username }}의 프로필</h1>
-  {% if profile_image and profile_image.image %}
-    <img id="profile-img" src="{{ profile_image.image.url }}" alt="profile_image" style="cursor: pointer;" />
-  {% else %}
-    <img id="profile-img" src="{% static 'users/user_profile.png' %}" alt="default_profile_image" style="cursor: pointer;" />
-  {% endif %}
+  <div class="row justify-content-center" g-5>
+    <div class="col-md-4 text-center" style="background-color: #f2f2f2; padding: 20px; border-radius: 15px;">
+      <!-- 프로필 이미지 -->
+      {% if profile_image and profile_image.image %}
+        <img id="profile-img" src="{{ profile_image.image.url }}" alt="profile_image" 
+          style="cursor: pointer; width: 100px; height: 100px; object-fit: cover; border-radius: 50%; background-color: white;" />
+      {% else %}
+        <img id="profile-img" src="{% static 'users/user_profile.png' %}" alt="default_profile_image" 
+          style="cursor: pointer; width: 100px; height: 100px; object-fit: cover; border-radius: 50%; background-color: white;" />
+      {% endif %}
 
-  <div id="profile-options" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 5px;">
-    <p id="change-image" style="cursor: pointer;">프로필 이미지 변경</p>
-    <p id="reset-image" style="cursor: pointer;">프로필 이미지 삭제</p>
+      <!-- 유저 이름 -->
+      <h2>{{ member.username }}</h2>
+
+      <p>팔로워: {{ member.followers.count }}</p>
+
+      <!-- 별점 (고정값으로 표시) -->
+      <p style="color: gold; margin: 10px 0;">
+        &#9733; &#9733; &#9733; &#9733; &#9733;
+      </p>
+
+      <!-- 팔로우/언팔로우 버튼 -->
+      {% if request.user != member %}
+        <form action="{% url 'users:follow' member.pk %}" method="POST" style="margin-top: 10px;">
+          {% csrf_token %}
+          {% if request.user in member.followers.all %}
+            <button type="submit" class="btn btn-secondary" style="width: 100%;"><i class="fas fa-user-minus"></i> 언팔로우</button>
+          {% else %}
+            <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-user-plus"></i> 팔로우</button>
+          {% endif %}
+        </form>
+      {% endif %}
+
+      <!-- 프로필 옵션 메뉴 -->
+      <div id="profile-options" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 5px;">
+        <p id="change-image" style="cursor: pointer;">프로필 이미지 변경</p>
+        <p id="reset-image" style="cursor: pointer;">프로필 이미지 삭제</p>
+      </div>
+
+      <!-- 프로필 이미지 업로드 폼 -->
+      {% if request.user == member %}
+        <form id="profile-form" action="{% url 'users:profile' member.username %}" method="POST" enctype="multipart/form-data" style="display: none;">
+          {% csrf_token %}
+          <input type="file" id="id_image" name="image" accept="image/*" style="display: none;" />
+          <input type="submit" value="이미지 변경" />
+        </form>
+      {% endif %}
+    </div>
+    <!--  프로필 간격 조정 -->
+    <div class="col-md-8" style="padding-left: 30px;">  
+      <br />
+      <h1>{{ member.username }}의 프로필</h1>
+      <br />
+      <p><i class="fa fa-store"></i> 가입일: {{ date_joined|date:'SHORT_DATE_FORMAT' }}</p>
+      <p><i class="fa fa-store"></i> 상점 오픈일: {{ shop_open_days }}일 전</p>
+      <div style="display: flex; flex-direction: row; gap: 10px; max-width: 200px;">
+        <a href="{% url 'accounts:update' %}" class="btn btn-primary">회원정보수정</a>
+      </div>
+    </div>
   </div>
 
-  {% if request.user == member %}
-    <!-- 파일 입력 필드를 숨김 -->
-    <form id="profile-form" action="{% url 'users:profile' member.username %}" method="POST" enctype="multipart/form-data" style="display: none;">
-      {% csrf_token %}
-      <input type="file" id="id_image" name="image" accept="image/*" style="display: none;" />
-      <input type="submit" value="이미지 변경" />
-    </form>
-  {% endif %}
+  <br /><br />
+
+ 
 
   <br />
-  <br />
-
-  <p>사용자: {{ member.username }}</p>
-  <p>가입일: {{ date_joined|date:'SHORT_DATE_FORMAT' }}</p>
-  <p>팔로워: {{ member.followers.count }}</p>
-  <p>팔로잉: {{ member.followings.count }}</p>
-
-  {% if request.user != member %}
-    <form action="{% url 'users:follow' member.pk %}" method="POST">
-      {% csrf_token %}
-      {% if request.user in member.followers.all %}
-        <input type="submit" value="Unfollow" />
-      {% else %}
-        <input type="submit" value="Follow" />
-      {% endif %}
-    </form>
-  {% endif %}
 
   
-    <a href="{% url "accounts:update" %}"><button>회원정보수정</button></a>
-    <form action="{% url "accounts:delete" %}" method="POST">
-      {% csrf_token %}
-      <input type="submit" value='회원탈퇴'>
-    </form>
+  <!-- 네비게이션 탭 -->
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">게시물</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">찜한 게시물</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">팔로잉</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="followers-tab" data-bs-toggle="tab" data-bs-target="#followers-tab-pane" type="button" role="tab" aria-controls="followers-tab-pane" aria-selected="false">팔로워</button>
+    </li>
+  </ul>
 
-
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">상품</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">찜</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">팔로잉</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">팔로워</button>
-      </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-        <div class="album py-5 bg-body-tertiary">
-          <div class="container-xxl ">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                {% for product in member.product.all %}
-                <div class="col">
-                  <div class="card shadow-sm">
-                    <a href="{% url "products:detail" product.pk %}">
-                    {% if product.image %}
-                    <div width="100%" height="225px" style="overflow: hidden;">
-                        <img src="{{ product.image.url }}" alt="{{product.title}}" width="100%" sytle='object-fit: cover;'>
-                    </div>
-                    {% else %}
-                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                    {% endif %}
-                    </a>
-                    <div class="card-body">
-                      <p class="card-text">{{product.title}} 작성자: {{product.author.username}}</p>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                          {% if user in product.user_like.all %}
-                            <form action="{% url "products:like" product.pk %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{product.user_like.count}}</i></button>
-                            </form>
-                          {% else  %}
-                            <form action="{% url "products:like" product.pk %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{product.user_like.count}}</i></button>
-                            </form>
-                          {% endif %}
-                          <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> {{product.clicked}}</button>
-                        </div>
-                        <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
-                      </div>
-                    </div>
+  <div class="tab-content" id="myTabContent">
+<!-- 게시물 리스트 -->
+<div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+  <div class="album py-5 bg-body-tertiary">
+    <div class="container-xxl">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for product in member.product.all %}
+          <div class="col">
+            <div class="card shadow-sm">
+              <a href="{% url 'products:detail' product.pk %}">
+                {% if product.image %}
+                  <div style="overflow: hidden; width: 100%; height: 225px;">
+                    <img src="{{ product.image.url }}" alt="{{product.title}}" style="width: 100%; height: 100%; object-fit: cover;">
                   </div>
-                </div>
-                {% endfor %}
-              </div>
-          </div>
-        </div>
-      </div>
-      <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-        <div class="album py-5 bg-body-tertiary">
-          <div class="container-xxl ">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                {% for product in member.product_like.all %}
-                <div class="col">
-                  <div class="card shadow-sm">
-                    <a href="{% url "products:detail" product.pk %}">
-                    {% if product.image %}
-                    <div width="100%" height="225px" style="overflow: hidden;">
-                        <img src="{{ product.image.url }}" alt="{{product.title}}" width="100%" sytle='object-fit: cover;'>
-                    </div>
+                {% else %}
+                  <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                    <title>Placeholder</title>
+                    <rect width="100%" height="100%" fill="#55595c"></rect>
+                    <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
+                  </svg>
+                {% endif %}
+              </a>
+              <div class="card-body">
+                <p class="card-text">{{product.title}} 작성자: {{product.author.username}}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    {% if user in product.user_like.all %}
+                      <form action="{% url 'products:like' product.pk %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{product.user_like.count}}</i></button>
+                      </form>
                     {% else %}
-                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                      <form action="{% url 'products:like' product.pk %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{product.user_like.count}}</i></button>
+                      </form>
                     {% endif %}
-                    </a>
-                    <div class="card-body">
-                      <p class="card-text">{{product.title}} 작성자: {{product.author.username}}</p>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                          {% if user in product.user_like.all %}
-                            <form action="{% url "products:like" product.pk %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{product.user_like.count}}</i></button>
-                            </form>
-                          {% else  %}
-                            <form action="{% url "products:like" product.pk %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{product.user_like.count}}</i></button>
-                            </form>
-                          {% endif %}
-                          <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> {{product.clicked}}</button>
-                        </div>
-                        <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
-                      </div>
-                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> {{product.clicked}}</button>
                   </div>
+                  <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
                 </div>
-                {% endfor %}
               </div>
-          </div>
-        </div>
-      </div>
-      <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
-        <div class="album py-5 bg-body-tertiary">
-          <div class="container-xxl ">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                {% for following in member.followings.all %}
-                  {% for product in following.product.all %}
-                    <div class="col">
-                      <div class="card shadow-sm">
-                        <a href="{% url "products:detail" product.pk %}">
-                        {% if product.image %}
-                        <div width="100%" height="225px" style="overflow: hidden;">
-                            <img src="{{ product.image.url }}" alt="{{product.title}}" width="100%" sytle='object-fit: cover;'>
-                        </div>
-                        {% else %}
-                        <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                        {% endif %}
-                        </a>
-                        <div class="card-body">
-                          <p class="card-text">{{product.title}} 작성자: {{product.author.username}}</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                              {% if user in product.user_like.all %}
-                                <form action="{% url "products:like" product.pk %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{product.user_like.count}}</i></button>
-                                </form>
-                              {% else  %}
-                                <form action="{% url "products:like" product.pk %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{product.user_like.count}}</i></button>
-                                </form>
-                              {% endif %}
-                              <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> {{product.clicked}}</button>
-                            </div>
-                            <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  {% endfor %}
-                {% endfor %}
-              </div>
-          </div>
-        </div>
-      </div>
-      <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">
-        <div class='container px-4 text-center'>
-          <div class='row'>
-            {% for follower in member.followers.all %}
-            <div class="col-lg-4">
-              <h2 class="fw-normal">{{follower.username}}</h2>
-              <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-color)"></rect></svg>
-              <p></p>
-              <p><a class="btn btn-secondary" href="#">View details »</a></p>
             </div>
-            {% endfor %}
           </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- 찜한 게시물 리스트 -->
+  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+    <div class="album py-5 bg-body-tertiary">
+      <div class="container-xxl">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          {% for product in liked_products %}
+            <div class="col">
+              <div class="card shadow-sm">
+                <a href="{% url 'products:detail' product.pk %}">
+                  {% if product.image %}
+                    <div style="overflow: hidden; height: 225px;">
+                      <img src="{{ product.image.url }}" alt="{{ product.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                  {% else %}
+                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                      <title>Placeholder</title>
+                      <rect width="100%" height="100%" fill="#55595c"></rect>
+                      <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
+                    </svg>
+                  {% endif %}
+                </a>
+                <div class="card-body">
+                  <p class="card-text">{{ product.title }} 작성자: {{ product.author.username }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                      {% if request.user in product.user_like.all %}
+                        <form action="{% url 'products:like' product.pk %}" method="POST">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-heart text-danger"> {{ product.user_like.count }}</i></button>
+                        </form>
+                      {% else %}
+                        <form action="{% url 'products:like' product.pk %}" method="POST">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-heart text-danger"> {{ product.user_like.count }}</i></button>
+                        </form>
+                      {% endif %}
+                      <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> {{ product.clicked }}</button>
+                    </div>
+                    <small class="text-body-secondary">{{ product.created_at|timesince }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- 팔로잉 리스트 -->
+    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+      <h2>팔로잉</h2>
+      <div class="container-xxl">
+        <div class="row">
+          {% for following in following_list %}
+          <div class="col-lg-4">
+            <h3>{{ following.username }}</h3>
+            <a class="btn btn-secondary" href="{% url 'users:profile' following.username %}">View profile</a>
+          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
 
+    <!-- 팔로워 리스트 -->
+    <div class="tab-pane fade" id="followers-tab-pane" role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
+      <h2>팔로워</h2>
+      <div class="container-xxl">
+        <div class="row">
+          {% for follower in followers_list %}
+          <div class="col-lg-4">
+            <h3>{{ follower.username }}</h3>
+            <a class="btn btn-secondary" href="{% url 'users:profile' follower.username %}">View profile</a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
   </div>
-  <script>
-    const profileImg = document.getElementById('profile-img')
-    const profileOptions = document.getElementById('profile-options')
-    const changeImage = document.getElementById('change-image')
-    const resetImage = document.getElementById('reset-image')
-    const profileForm = document.getElementById('profile-form')
-    const imageInput = document.getElementById('id_image')
-    
-    profileImg.onclick = function (event) {
-      // 옵션 메뉴를 프로필 이미지 근처에 표시
-      profileOptions.style.display = 'block'
-      profileOptions.style.left = event.pageX + 'px'
-      profileOptions.style.top = event.pageY + 'px'
-    }
-    
-    changeImage.onclick = function () {
-      // 파일 선택 창 열기
-      imageInput.click()
-    }
-    
-    resetImage.onclick = function () {
-      if (confirm('프로필 이미지를 기본 이미지로 변경하시겠습니까?')) {
-        // Ajax 요청으로 프로필 이미지를 기본 이미지로 리셋
-        fetch("{% url 'users:reset_profile_image' member.username %}", {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
-          }
+
+</div>
+<script>
+  // JavaScript를 사용해 탭 전환 기능을 강화할 수도 있습니다.
+  const tabs = document.querySelectorAll('#myTab button')
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function (event) {
+      // 현재 활성화된 탭을 비활성화
+      tabs.forEach(btn => btn.classList.remove('active'))
+
+      // 클릭된 탭을 활성화
+      event.currentTarget.classList.add('active')
+
+      // 탭에 맞는 콘텐츠를 보여줌
+      document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('show', 'active')
+      })
+      const targetPane = document.querySelector(event.currentTarget.getAttribute('data-bs-target'))
+      targetPane.classList.add('show', 'active')
+    })
+  })
+</script>
+
+
+<script>
+  const profileImg = document.getElementById('profile-img')
+  const profileOptions = document.getElementById('profile-options')
+  const changeImage = document.getElementById('change-image')
+  const resetImage = document.getElementById('reset-image')
+  const profileForm = document.getElementById('profile-form')
+  const imageInput = document.getElementById('id_image')
+
+  profileImg.onclick = function (event) {
+    // 옵션 메뉴를 프로필 이미지 근처에 표시
+    profileOptions.style.display = 'block'
+    profileOptions.style.left = event.pageX + 'px'
+    profileOptions.style.top = event.pageY + 'px'
+  }
+
+  changeImage.onclick = function () {
+    // 파일 선택 창 열기
+    imageInput.click()
+  }
+
+  resetImage.onclick = function () {
+    if (confirm('프로필 이미지를 기본 이미지로 변경하시겠습니까?')) {
+      // Ajax 요청으로 프로필 이미지를 기본 이미지로 리셋
+      fetch("{% url 'users:reset_profile_image' member.username %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+        .then(() => {
+          // 리셋된 후 페이지를 새로고침
+          window.location.reload() // 페이지를 새로고침하여 변경사항을 반영
         })
-          .then(() => {
-            // 리셋된 후 페이지를 새로고침
-            window.location.reload() // 페이지를 새로고침하여 변경사항을 반영
-          })
-          .catch(() => {
-            alert('이미지를 기본 이미지로 변경할 수 없습니다.')
-          })
-      }
-      // 옵션 메뉴를 숨김
+        .catch(() => {
+          alert('이미지를 기본 이미지로 변경할 수 없습니다.')
+        })
+    }
+    // 옵션 메뉴를 숨김
+    profileOptions.style.display = 'none'
+  }
+
+  // 이미지 선택 시 폼을 자동으로 제출
+  imageInput.onchange = function () {
+    profileForm.submit()
+  }
+
+  // 옵션 메뉴 외부를 클릭했을 때 메뉴를 숨김
+  document.addEventListener('click', function (event) {
+    if (!profileOptions.contains(event.target) && event.target !== profileImg) {
       profileOptions.style.display = 'none'
     }
-    
-    // 이미지 선택 시 폼을 자동으로 제출
-    imageInput.onchange = function () {
-      profileForm.submit()
-    }
-    
-    // 옵션 메뉴 외부를 클릭했을 때 메뉴를 숨김
-    document.addEventListener('click', function (event) {
-      if (!profileOptions.contains(event.target) && event.target !== profileImg) {
-        profileOptions.style.display = 'none'
-      }
-    })
-  </script>
+  })
+</script>
 {% endblock %}
