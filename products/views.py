@@ -5,6 +5,7 @@ from django.db.models import Count
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models.query_utils import Q
+from django.http import JsonResponse
 import re
 
 
@@ -37,9 +38,6 @@ def products(request):
     return render(request, 'products/products.html', context)
 
 
-def convert_hashtags_to_links(content):
-    # 해시태그를 추출하고 링크로 변환
-    return re.sub(r'#(\w+)', r'<a href="/products/hashtag/\1/">#\1</a>', content)
 
 
 @login_required
@@ -50,13 +48,12 @@ def create(request):
         if form.is_valid():
             product = form.save(commit=False)
             product.author = request.user
-            
-            hashtags = re.findall(r'#(\w+)', product.content)
-            product.content = convert_hashtags_to_links(product.content)  # 해시태그를 링크로 변환
             product.save()
-            for tag in hashtags:
-                hashtag, _ = HashTag.objects.get_or_create(hashtag_name=tag)
-                product.hashtag.add(hashtag)
+            # hashtags = re.findall(r'#(\w+)', product.content)
+            # for tag in hashtags:
+            #     hashtag, _ = HashTag.objects.get_or_create(hashtag_name=tag)
+            #     product.hashtag.add(hashtag)
+            product.save_hash()
 
             return redirect("products:products")
     else:
@@ -82,6 +79,8 @@ def update(request,pk):
     if request.method == 'POST':
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
+            form.save(commit=False)
+            product.save_hash()
             form.save()
         return redirect('products:detail', pk)
     else:
@@ -101,17 +100,21 @@ def delete(request,pk):
     return redirect('products:products')
 
 
+@login_required
 @require_POST
 def like(request, pk):
-    if request.user.is_authenticated:
-        product = get_object_or_404(Product, pk=pk)
-        if product.user_like.filter(pk=request.user.pk).exists(): 
-            product.user_like.remove(request.user) 
-        else:
-            product.user_like.add(request.user)
+    product = get_object_or_404(Product, pk=pk)
+    if product.user_like.filter(pk=request.user.pk).exists(): 
+        product.user_like.remove(request.user)
+        liked = False 
     else:
-        redirect('accounts:login')
-    return redirect('products:products')
+        product.user_like.add(request.user)
+        liked = True
+    context = {
+        'liked': liked,
+        'count': product.user_like.count()
+    }
+    return JsonResponse(context)
 
 
 def hashtag_detail(request, hashtag_name):

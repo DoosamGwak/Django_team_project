@@ -1,8 +1,8 @@
 from django.db import models
 from django.conf import settings
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
-
+import re
 
 class HashTag(models.Model):
     hashtag_name = models.CharField(max_length=10, unique=True)
@@ -30,7 +30,18 @@ class Product(models.Model):
             return str(time.days) + '일 전'
         else:
             return False
-        
+    
+    def convert_hashtags_to_links(self):
+        return re.sub(r'#(\w+)', r'<a class="hashtag" href="/products/hashtag/\1/">#\1</a>', self.content)
+
+    def save_hash(self):
+        hashtags = re.findall(r'#(\w+)', self.content)
+        for tag in hashtags:
+            hashtag, _ = HashTag.objects.get_or_create(hashtag_name=tag)
+            self.hashtag.add(hashtag)
+        return False
+
+
 class Comment(models.Model):
     comment_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user")
     comment_product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comment_product")
