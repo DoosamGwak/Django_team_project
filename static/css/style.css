@@ -1,3 +1,47 @@
-img{
-    width: 200px;
+body, h1, h2, h3, h4, h5, h6, p, a, button, nav, footer, select, option, input, textarea {
+    font-family: 'Poor Story', sans-serif !important;
+}
+
+.navbar .form-control {
+    width: calc(100% - 150px);
+    max-width: 600px;
+    height: 50px;
+    font-size: 1.25rem;
+}
+
+.navbar .btn-outline-success {
+    height: 50px;
+    font-size: 1.25rem; 
+    padding: 10px 20px; 
+}
+
+.navbar-nav {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.btn .btn-outline-warning {
+    width: 130px;
+    height: 60px;
+}
+
+.logo { 
+    width: 250px;
+}
+
+.hashtag {
+    color:cornflowerblue;
+}
+
+.bd-placeholder-img {
+    border-radius: 5%;
+}
+
+.card-body {
+    background-color: rgb(241, 241, 241);
+}
+
+.icon {
+    width: 30px;
 }

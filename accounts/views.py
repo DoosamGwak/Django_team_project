@@ -3,7 +3,7 @@ from .forms import CustomUserCreationForm, CustomUserChangeForm
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import AuthenticationForm,  PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.views.decorators.http import require_http_methods, require_POST
 
 
@@ -11,13 +11,13 @@ from django.views.decorators.http import require_http_methods, require_POST
 @require_http_methods(["GET", "POST"])
 def login(request):
     if request.user.is_authenticated:  # 비로그인 상태에서만 url로 접근 가능
-        return redirect("products:products")
+        return redirect("products:products")  
     if request.method == "POST": #내가 데이터를 치고 들어온것
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             auth_login(request, form.get_user())
             next_path = request.GET.get("next") or 'products:products'
-        return redirect(next_path)
+            return redirect(next_path)
     else: #url 내가 직접 치고온거 or <a href=''></a>
         form = AuthenticationForm()
     context = { "form": form }  

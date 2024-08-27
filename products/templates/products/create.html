@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 
 {% block content %}
 <div style="text-align : center; max-width: 500px; margin: 4rem auto;">
-    <h3>create</h3>
+    <h1>물품등록</h1>
     <form action="{% url "products:create" %}" method="POST" enctype='multipart/form-data'>
         {% csrf_token %}  
         {% bootstrap_form form %}
-        <input type="submit" value="물품등록">
+        <input type="submit" value="물품등록" class="btn btn-outline-primary">
     </form>
 </div>
 {% endblock content %}
