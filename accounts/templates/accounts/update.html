@@ -4,27 +4,7 @@
 {% bootstrap_javascript %}
 
 {% block content %}
-  <div class="form-container">
-    <h2 class="form-title">회원 정보 수정</h2>
-    <form action="{% url 'accounts:update' %}" method="POST">
-      {% csrf_token %}
-      {% bootstrap_form form exclude='password' layout='horizontal' %}
-
-      <!-- 수정 및 비밀번호 변경 버튼 배치 -->
-      <div class="form-group btn-group">
-        <a href="{% url 'accounts:update_password' %}" class="btn btn-secondary flex-grow-1 btn-block">비밀번호 변경</a>
-        <button type="submit" class="btn btn-success flex-grow-1 btn-block">수정</button>
-      </div>
-    </form>
-
-    <!-- 회원 탈퇴 버튼 별도 배치 -->
-    <form action="{% url 'accounts:delete' %}" method="POST" class="form-group mt-3" onsubmit="return confirmDelete()">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger btn-block w-100">회원 탈퇴</button>
-    </form>
-  </div>
-
-  <style>
+<style>
     .form-container {
       margin: 60px auto;
       max-width: 600px;
@@ -88,6 +68,28 @@
       width: 100%;
     }
   </style>
+
+  <div class="form-container">
+    <h2 class="form-title">회원 정보 수정</h2>
+    <form action="{% url 'accounts:update' %}" method="POST">
+      {% csrf_token %}
+      {% bootstrap_form form exclude='password' layout='horizontal' %}
+
+      <!-- 수정 및 비밀번호 변경 버튼 배치 -->
+      <div class="form-group btn-group">
+        <a href="{% url 'accounts:update_password' %}" class="btn btn-secondary flex-grow-1 btn-block">비밀번호 변경</a>
+        <button type="submit" class="btn btn-success flex-grow-1 btn-block">수정</button>
+      </div>
+    </form>
+
+    <!-- 회원 탈퇴 버튼 별도 배치 -->
+    <form action="{% url 'accounts:delete' %}" method="POST" class="form-group mt-3" onsubmit="return confirmDelete()">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger btn-block w-100">회원 탈퇴</button>
+    </form>
+  </div>
+
+
 
   <script>
     function confirmDelete() {
