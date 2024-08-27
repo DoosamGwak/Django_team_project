@@ -5,6 +5,7 @@ from django.db.models import Count
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models.query_utils import Q
+from django.http import JsonResponse
 import re
 
 
@@ -99,17 +100,21 @@ def delete(request,pk):
     return redirect('products:products')
 
 
+@login_required
 @require_POST
 def like(request, pk):
-    if request.user.is_authenticated:
-        product = get_object_or_404(Product, pk=pk)
-        if product.user_like.filter(pk=request.user.pk).exists(): 
-            product.user_like.remove(request.user) 
-        else:
-            product.user_like.add(request.user)
+    product = get_object_or_404(Product, pk=pk)
+    if product.user_like.filter(pk=request.user.pk).exists(): 
+        product.user_like.remove(request.user)
+        liked = False 
     else:
-        redirect('accounts:login')
-    return redirect('products:products')
+        product.user_like.add(request.user)
+        liked = True
+    context = {
+        'liked': liked,
+        'count': product.user_like.count()
+    }
+    return JsonResponse(context)
 
 
 def hashtag_detail(request, hashtag_name):
