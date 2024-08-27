@@ -29,3 +29,19 @@ body, h1, h2, h3, h4, h5, h6, p, a, button, nav, footer {
 .logo { 
     width: 250px;
 }
+
+.hashtag {
+    color:cornflowerblue;
+}
+
+.bd-placeholder-img {
+    border-radius: 5%;
+}
+
+.card-body {
+    background-color: rgb(241, 241, 241);
+}
+
+main {
+    background-color: transparent;
+}

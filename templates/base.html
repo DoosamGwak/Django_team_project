@@ -12,8 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poor+Story&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/sketchy/bootstrap.min.css">
-</head>
-<body>
+</head> 
+<body style="background-image:url({% static "image/45-degree-fabric-light.png" %}); background-size:auto;">
   
   <nav class="navbar navbar-expand-lg bg-body-tertiary container-fluid" style='height: 60px;'>
     <div class="container">
@@ -29,12 +29,11 @@
     </div>
   </nav>
 
-
+  
   <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top" style='height: 150px;'>
     <div class="container text-center">
       
           <a class="navbar-brand fs-1" href="{% url "products:products" %}"><img class='logo' src="{% static "image/logo.png" %}" alt="장발장터"></a>
-
           
           <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
             <form class="d-flex" role="search" method="GET" action="{% url "products:products" %}" style="width: 100%;">

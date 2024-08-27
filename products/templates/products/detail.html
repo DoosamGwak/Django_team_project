@@ -1,10 +1,25 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
+<br>
+<br>
 
-<h1>{{product.title}}</h1><br>
-<img src="{{ product.image.url }}" alt="{{product.title}}" class='product'><br>
+<div class="card container text-center bg-body-tertiary">
+    <div class="row">
+      <div class="col-5">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{product.title}}" class='product' width='100%'>
+        {% else %}  
+            <img class="no_product" src="{% static "image/no_image.png" %}" width='100%'>
+        {% endif %}
+        <br>
+      </div>
+      <div class="col-7"><h1>{{product.title}}</h1></div>
+    </div>
+  </div>
+
 <p class='fs-3'>{{product.convert_hashtags_to_links|safe}}</p>
+<br>
 <p class='fs-5'>{{product.created_string}}</p><br>
 
 
