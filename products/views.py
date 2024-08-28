@@ -49,10 +49,6 @@ def create(request):
             product = form.save(commit=False)
             product.author = request.user
             product.save()
-            # hashtags = re.findall(r'#(\w+)', product.content)
-            # for tag in hashtags:
-            #     hashtag, _ = HashTag.objects.get_or_create(hashtag_name=tag)
-            #     product.hashtag.add(hashtag)
             product.save_hash()
 
             return redirect("products:products")
