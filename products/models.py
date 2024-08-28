@@ -5,7 +5,7 @@ from django.utils import timezone
 import re
 
 class HashTag(models.Model):
-    hashtag_name = models.CharField(max_length=10, unique=True)
+    hashtag_name = models.CharField(max_length=100, unique=True)
 
 class Product(models.Model):
     title = models.CharField(max_length=100)
