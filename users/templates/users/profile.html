@@ -58,9 +58,11 @@
       <br />
       <p><i class="fa fa-store"></i> 가입일: {{ date_joined|date:'SHORT_DATE_FORMAT' }}</p>
       <p><i class="fa fa-store"></i> 상점 오픈일: {{ shop_open_days }}일 전</p>
+      {% if request.user == member %}
       <div style="display: flex; flex-direction: row; gap: 10px; max-width: 200px;">
         <a href="{% url 'accounts:update' %}" class="btn btn-primary">회원정보수정</a>
       </div>
+      {% endif %}
     </div>
   </div>
 
