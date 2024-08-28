@@ -5,6 +5,7 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.views.decorators.http import require_http_methods, require_POST
+from users.models import Profile
 
 
 
@@ -37,6 +38,8 @@ def signup(request):
         if form.is_valid():     #폼 유효성 검사
             user = form.save()
             auth_login(request, user)   #로그인, 세션만들기V
+            if not hasattr(user, 'profile'):  # 프로필이 없다면 자동으로 생성
+                Profile.objects.create(user=user)
             return redirect('products:products')
     else:     #url 내가 직접 치고온거 or <a href=''></a>
         form = CustomUserCreationForm()   #데이터를 입력하는창

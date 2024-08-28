@@ -66,7 +66,10 @@ def detail(request, pk):
     product = get_object_or_404(Product,pk=pk)
     product.clicked += 1
     product.save()
-    profile=Profile.objects.get(user=product.author)
+    try:
+        profile=Profile.objects.get(user=product.author)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=product.author)
 
     context = {
         'product': product,
