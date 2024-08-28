@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models.query_utils import Q
 from django.http import JsonResponse
-import re
+from users.models import Profile
 
 
 def products(request):
@@ -66,7 +66,12 @@ def detail(request, pk):
     product = get_object_or_404(Product,pk=pk)
     product.clicked += 1
     product.save()
-    context = {'product': product}
+    profile=Profile.objects.get(user=product.author)
+
+    context = {
+        'product': product,
+        'profile': profile
+    }
     return render(request,'products/detail.html', context)
 
 
@@ -77,12 +82,12 @@ def update(request,pk):
         return redirect('products:detail',pk)
     
     if request.method == 'POST':
-        form = ProductForm(request.POST, instance=product)
+        form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save(commit=False)
             product.save_hash()
             form.save()
-        return redirect('products:detail', pk)
+            return redirect('products:detail', pk)
     else:
         form = ProductForm(instance=product)
     context = {

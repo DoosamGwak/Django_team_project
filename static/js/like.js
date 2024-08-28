@@ -10,9 +10,9 @@ likeButton.forEach(i =>{
             likeCount.innerText = response.data.count
             
             if(response.data.liked){
-                event.target.className = 'fa-solid fa-heart text-danger like-button'
+                event.target.className = 'fa-solid fa-heart like-button'
             } else{
-                event.target.className = "fa-regular fa-heart text-danger like-button"
+                event.target.className = "fa-regular fa-heart like-button"
             }
         })
     })

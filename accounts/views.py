@@ -37,7 +37,7 @@ def signup(request):
         if form.is_valid():     #폼 유효성 검사
             user = form.save()
             auth_login(request, user)   #로그인, 세션만들기V
-        return redirect('products:products')
+            return redirect('products:products')
     else:     #url 내가 직접 치고온거 or <a href=''></a>
         form = CustomUserCreationForm()   #데이터를 입력하는창
     context = {'form': form }

@@ -51,6 +51,7 @@ def profile(request, username):
     return render(request, "users/profile.html", context)
 
 
+@require_POST
 def reset_profile_image(request, username):
     member = get_object_or_404(get_user_model(), username=username)
     profile_image = Profile.objects.filter(user=member).last()
