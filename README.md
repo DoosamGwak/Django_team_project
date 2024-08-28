@@ -54,6 +54,8 @@
     판매 상품에 찜하기
 6. **유저 팔로우, 팔로잉 기능**
     유저들간 팔로우 및 팔로잉
+## ERD
+![image](https://github.com/user-attachments/assets/9e7d9149-e7e2-4a2a-b714-970aa7bd6f8d)
 ## 기술 스택
 - 프로그래밍 언어  : Python 3.10
 - 프레임워크  : Django 4.2
